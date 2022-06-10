@@ -7,7 +7,7 @@ import requests
 import threading
 import random
 
-token = "OTYzNDU2OTU1OTQxMjczNjAw.G7zgia.4G1ZdDmFNTMBzF6cdUPijcQyvzcc_pK4F4jt9Q"
+token = ""
 prefix = "%"
 intents = discord.Intents.all()
 

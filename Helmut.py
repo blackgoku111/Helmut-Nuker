@@ -7,14 +7,14 @@ import requests
 import threading
 import random
 
-token = "OTYzNDU2OTU1OTQxMjczNjAw.GtWPiM.e3LY382PxofBx5coK6poNyD4A3HpKIS5HmL4b4"
+token = ""
 prefix = "%"
 intents = discord.Intents.all()
 
 helmut = commands.Bot(command_prefix=prefix, intents= intents, help_command=None)
 
 headers = {
-    "Authorization": f"Bot {token}" 
+    "Authorization": token
     }
 
 spam_message = ["@everyone nuked","@everyone get raided"]

